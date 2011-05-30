@@ -19,7 +19,7 @@ function MissionObject(domains){
   var magicPoolCount		= 0;
   var hackingPoolCount		= 0;
   var contactPoolCount		= 0;
-  var diceOnSuccess			= new Array(); // Dés lancé et en succès avec index perso
+  var diceOnSuccess			= new Array(); // Dï¿½s lancï¿½ et en succï¿½s avec index perso
   
   var missionIsOnSuccess	= false;
   
@@ -32,7 +32,7 @@ function MissionObject(domains){
 	  return domains;
   };
   
-  // Execute toutes les actions lors de la résolution final à la fin du timing
+  // Execute toutes les actions lors de la rï¿½solution final ï¿½ la fin du timing
   this.ResolveDicesPools = function(){	  
 	 
 	// construction des tableau indiquant les D6 disponible
@@ -76,8 +76,8 @@ function MissionObject(domains){
 	  }
   };
   
-  // Construit les tableaux de D6 en succès
-  // un index de personnage par dé
+  // Construit les tableaux de D6 en succï¿½s
+  // un index de personnage par dï¿½
   function ConstructPoolDiceArray(dice, index, type){	  
   		for (i=0; i<dice; i++) {	  			
   			if (rollDice()){
@@ -206,7 +206,7 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 		return hacking;
 	};
 	
-	this.GetContactP = function(){
+	this.GetContact = function(){
 		return contact;
 	};
 	
