@@ -1,0 +1,18 @@
+body{ height:100%; background-color:#2a2121; color:#b6b6b6; font: 65% tahoma}
+
+a{ color:#b6b6b6;}
+a:hover{ color:#FFF;}
+
+/* Frise */
+#frise{ height:50px; width:400px; background-color:#FFFFFF;}
+#elapsed{ height:100%; width:0px; background-color:#e3e3e3;}
+
+/* cylogger*/
+#cyLogger{ position:absolute; top:0; right:0; background-color:rgb(23,30,46); color:#FFF; border:1px solid #FFF; border-top:none;}
+#cyLogger > div{ position:relative;}
+#cyLogger .large{ width:250px; height:300px; padding:0;}
+#cyLogger > div > div{ position:absolute; bottom:0; width:100%;}
+#cyLogger > div > div > div{ padding: 2px 0 2px 5px;}
+#cyLogger .warning{ background-color:rgb(230,44,109); color:#FFF;}
+#cyLogger .normal{ background-color:rgb(192,182,123); color:rgb(23,30,46);}
+#cyLogger .info{ background-color:rgb(49,225,204); color:rgb(23,30,46);}
