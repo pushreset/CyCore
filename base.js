@@ -21,6 +21,38 @@ team.addMember('the hacker', 0, 0, 6, 2,10);
 $(document).ready(function() {
 	$(window).load(function() {
 		
+		//add pool dice for tests
+		team.members[0].AddCombatPoolDice();
+		team.members[1].AddCombatPoolDice();
+		team.members[1].AddCombatPoolDice();
+		team.members[1].AddCombatPoolDice();
+		team.members[2].AddCombatPoolDice();
+		team.members[3].AddCombatPoolDice();
+
+		team.members[0].AddMagicPoolDice();
+		team.members[0].AddMagicPoolDice();
+		team.members[1].AddMagicPoolDice();
+		team.members[2].AddMagicPoolDice();
+		team.members[3].AddMagicPoolDice();
+
+		team.members[0].AddHackingPoolDice();
+		team.members[1].AddHackingPoolDice();
+		team.members[2].AddHackingPoolDice();
+		team.members[3].AddHackingPoolDice();
+		team.members[3].AddHackingPoolDice();
+
+		team.members[0].AddContactPoolDice();
+		team.members[1].AddContactPoolDice();
+		team.members[2].AddContactPoolDice();
+		team.members[2].AddContactPoolDice();
+		team.members[3].AddContactPoolDice();		
+		
+		
+		$.each(team.members, function(index, value){
+			console.log(value);
+		});
+		
+		
 		friseElement = $('#frise');
 		elapsedElement = $('#elapsed');
 		

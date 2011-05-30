@@ -10,6 +10,19 @@ function MissionObject(domains){
   var domains = domains; //des seuils de difficultÃ© dans 4 domaine : magie, combat, hacking et contact en d6
   var reputation; //un niveau de rÃ©putation minimum pour Ãªtre sÃ©lectionnÃ© pour la mission
   
+  //POOL D6 miser sur la mission 
+  var combatPool			= new Array();
+  var magicPool				= new Array();
+  var hackingPool			= new Array();
+  var contactPool			= new Array();
+  var combatPoolCount		= 0;
+  var magicPoolCount		= 0;
+  var hackingPoolCount		= 0;
+  var contactPoolCount		= 0;
+  var diceOnSuccess			= new Array(); // Dés lancé et en succès avec index perso
+  
+  var missionIsOnSuccess	= false;
+  
   this.timeEvent = new Array(); //stockage des time event
  
   var timeOutSetted = false; // time out is already setted
@@ -19,14 +32,72 @@ function MissionObject(domains){
 	  return domains;
   };
   
+  // Execute toutes les actions lors de la résolution final à la fin du timing
   this.ResolveDicesPools = function(){	  
-
-	  combatPool		= 0;
-	  for(x in team.members){
-		  combatPool 	= combatPool + team.members[x].GetCombatPool();
-	  }
+	 
+	// construction des tableau indiquant les D6 disponible
+  	$.each(team.members, function(index, data){  		
+  		ConstructPoolDiceArray(data.GetCombatPool(), index, 'combat');
+  		ConstructPoolDiceArray(data.GetMagicPool(), index, 'magic');
+  		ConstructPoolDiceArray(data.GetHackingPool(), index, 'hacking');
+  		ConstructPoolDiceArray(data.GetContactPool(), index, 'contact');		
+	});
+	  	
+  	console.log(combatPool);
+	console.log(magicPool);
+	console.log(hackingPool);
+	console.log(contactPool);
+	
+	combatPoolCount = count(combatPool);
+	magicPoolCount = count(magicPool);
+	hackingPoolCount = count(hackingPool);
+	contactPoolCount = count(contactPool);
 	  
-	  return combatPool;
+	cyLogger.log('TOTAL POOLS | Combat: '+combatPoolCount+' Magie: '+magicPoolCount+' Hacking: '+hackingPoolCount+' Contact: '+contactPoolCount,INFO_CYLOG);
+
+	if (this.IfMissionIsSuccess()){
+		missionIsOnSuccess = true;
+		return 'mission success';
+	}
+	else{
+		missionIsOnSuccess = false;
+		return 'mission failed';
+	}
+	
+  };
+  
+  this.IfMissionIsSuccess = function(){
+	  var difficulty = mission.GetDifficulty();
+	  if (combatPoolCount >= difficulty.combat && magicPoolCount >= difficulty.magic && hackingPoolCount >= difficulty.hacking && contactPoolCount >= difficulty.contact){
+		return true;	
+	  }
+	  else{
+		return false;
+	  }
+  };
+  
+  // Construit les tableaux de D6 en succès
+  // un index de personnage par dé
+  function ConstructPoolDiceArray(dice, index, type){	  
+  		for (i=0; i<dice; i++) {	  			
+  			if (rollDice()){
+  				switch (type){
+		  			case 'combat':
+		  				combatPool.push(index);
+		  				break;
+		  			case 'magic':
+		  				magicPool.push(index);
+		  				break;
+		  			case 'hacking':
+		  				hackingPool.push(index);
+		  				break;
+		  			case 'contact':
+		  				contactPool.push(index);
+		  				break;
+	  			}	
+  			}
+  		}
+  		return true;
   };
   
   this.RollPackDice = function(number, side, fail){
@@ -96,11 +167,12 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 	var poolHacking 	= 0;
 	var poolContact 	= 0;
 	
+	this.poolAvailable	= 0;
+	
 	function initialize(){
 		
 	}
-	initialize();
-	
+	initialize();	
 	
 	this.GetMagicPool = function(){
 		return poolMagie;
@@ -118,6 +190,25 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 		return poolContact;
 	};
 	
+	this.GetName = function(){
+		return name;
+	};
+	
+	this.GetMagic = function(){
+		return magie;
+	};
+	
+	this.GetCombat = function(){
+		return combat;
+	};
+	
+	this.GetHacking = function(){
+		return hacking;
+	};
+	
+	this.GetContactP = function(){
+		return contact;
+	};
 	
 	this.ShowStats = function(){
 		cyLogger.log('"'+name+'" M'+magie+' C'+combat+' H'+hacking+' C'+contact+' | PA'+action+' | pM'+poolMagie+' pC'+poolCombat+' pH'+poolHacking+' pC'+poolContact, INFO_CYLOG);
