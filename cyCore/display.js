@@ -11,3 +11,13 @@ function DisplayConstructTeam(){
 	});
 	
 };
+
+function DisplayInfoHuntingResult(type, data){
+	
+	if (type){
+		cyLogger.log('Info hunting :'+type+' data:'+data, 'info');
+	}
+	else{
+		cyLogger.log('Info hunting fail', 'info');
+	}
+};

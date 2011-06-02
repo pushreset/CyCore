@@ -83,3 +83,40 @@ function StartFrise(){
   runFrise = true;
   cyLogger.log('GO FRISE', 'warning');
 }
+
+function CalculPlusTime(hours){
+	//hourOfDay	dayOfWeek
+	var daysPlus = 0;
+	var hoursPlus = 0;
+	
+	var hourFinal;
+	var dayFinal;
+	
+	//check if hours >= days
+	if (hours >= 24){
+		
+		daysPlus = round(hours / 24);
+		hoursPlus = round(hours % 24);
+		
+		//console.log(daysPlus +' '+ hoursPlus);
+		
+	}
+	else{
+		hoursPlus = hours;
+	}
+	
+	hourFinal = currentTime.hour + hoursPlus;
+	
+	//console.log('hourOfDay: '+hourOfDay);
+	//console.log('hourPlus: '+hourFinal);
+	
+	if (hourFinal >= 25 ){
+		daysPlus++;		
+		hourFinal = hourFinal - 24;		
+	}
+	
+	dayFinal = currentTime.day + daysPlus;
+	
+	return new Array({day: dayFinal, hour: hourFinal});
+	
+}

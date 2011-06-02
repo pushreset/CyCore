@@ -21,6 +21,8 @@ function MissionObject(domains){
   var contactPoolCount		= 0;
   var diceOnSuccess			= new Array(); // D�s lanc� et en succ�s avec index perso
   
+  var missionTarget			= 'Renraku';
+  
   var missionIsOnSuccess	= false;
   
   this.timeEvent = new Array(); //stockage des time event
@@ -28,6 +30,8 @@ function MissionObject(domains){
   var timeOutSetted = false; // time out is already setted
   var missionLaunched = false; // mission has begun
  
+  var infoHuntingType;
+  
   this.GetDifficulty = function(){
 	  return domains;
   };
@@ -43,10 +47,10 @@ function MissionObject(domains){
   		ConstructPoolDiceArray(data.GetContactPool(), index, 'contact');		
 	});
 	  	
-  	console.log(combatPool);
-	console.log(magicPool);
-	console.log(hackingPool);
-	console.log(contactPool);
+  	//console.log(combatPool);
+	//console.log(magicPool);
+	//console.log(hackingPool);
+	//console.log(contactPool);
 	
 	combatPoolCount = count(combatPool);
 	magicPoolCount = count(magicPool);
@@ -156,11 +160,14 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 	var contact 		= contact;
 	
 	var action 			= actionPoints;
+	var actionMax 		= actionPoints;
 	
 	var magieCost 		= magieCost ? magieCost : 2;
 	var combatCost 		= combatCost ? combatCost : 2;
 	var hackingCost 	= hackingCost ? hackingCost : 2;
 	var contactCost 	= contactCost ? contactCost : 2;
+	
+	var infoHuntingCost = 4;
 	
 	var poolMagie 		= 0;
 	var poolCombat 		= 0;
@@ -316,6 +323,60 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 		}		
 	};
 	
+	// Member go to sleep and rest => restore Action Point
+	this.GoToSleep = function(){
+		
+		// calcul fin
+		var time = CalculPlusTime(SLEEPDURATION);	
+		mission.SetTimeEvent(time[0].day, time[0].hour, RestoreMyAction);
+		
+		return time;
+	};
+	
+	function RestoreMyAction(){
+		action = action + 10;
+		action = action > actionMax ? actionMax : action;
+		cyLogger.log('"'+name+'" Restore Action Points : '+action, INFO_CYLOG);
+		return true;
+	};
+	
+	// Member active contact and try to find info about mission
+	this.GoToInfoHunting = function(type){
+		
+		infoHuntingType = type;
+		
+		if (this.ActionAvailable(infoHuntingCost)){
+			var time = CalculPlusTime(INFOHUNTINGDURATION);	
+			mission.SetTimeEvent(time[0].day, time[0].hour, InfoHunting);
+			
+			return time;
+		}
+		else {
+			return false;
+		}
+	};
+	
+	function InfoHunting(){
+		var difficulty = 2 + contact; // reussite  sur 1 + score contact	
+		difficulty = difficulty > 6 ? 6:difficulty; // echec automatique sur 6+ 		
+		var isSuccess = rollDice(6, difficulty);
+		
+		if (isSuccess){
+		
+			switch (infoHuntingType){
+				case 'target':
+					data = missionTarget;
+					break;
+			}
+			
+			DisplayInfoHuntingResult(infoHuntingType, data);
+		}
+		else{
+			DisplayInfoHuntingResult(false);
+		}
+		
+		return true;
+	};
 }
 
 function TimeObject(setDay, setHour) {
