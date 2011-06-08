@@ -36,6 +36,10 @@ function MissionObject(domains){
 	  return domains;
   };
   
+  this.GetMissionInfos = function(){
+	  return new Array({target: missionTarget});
+  };
+  
   // Execute toutes les actions lors de la r�solution final � la fin du timing
   this.ResolveDicesPools = function(){	  
 	 
@@ -61,11 +65,11 @@ function MissionObject(domains){
 
 	if (this.IfMissionIsSuccess()){
 		missionIsOnSuccess = true;
-		return 'mission success';
+		cyLogger.log('mission success');
 	}
 	else{
 		missionIsOnSuccess = false;
-		return 'mission failed';
+		cyLogger.log('mission failed');
 	}
 	
   };
@@ -119,6 +123,7 @@ function MissionObject(domains){
   //callback when timeOut
   TimeOutMission = function(){
 	  cyLogger.log('TimeOutMission',INFO_CYLOG);
+	  mission.ResolveDicesPools();
   };
   
   // set time event
@@ -162,12 +167,13 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 	var action 			= actionPoints;
 	var actionMax 		= actionPoints;
 	
-	var magieCost 		= magieCost ? magieCost : 2;
-	var combatCost 		= combatCost ? combatCost : 2;
-	var hackingCost 	= hackingCost ? hackingCost : 2;
-	var contactCost 	= contactCost ? contactCost : 2;
+	var magieCost 		= magieCost ? magieCost : 5;
+	var combatCost 		= combatCost ? combatCost : 5;
+	var hackingCost 	= hackingCost ? hackingCost : 5;
+	var contactCost 	= contactCost ? contactCost : 5;
 	
-	var infoHuntingCost = 4;
+	var infoHuntingCost = 5;
+	var infoHuntingType;
 	
 	var poolMagie 		= 0;
 	var poolCombat 		= 0;
@@ -215,6 +221,10 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 	
 	this.GetContact = function(){
 		return contact;
+	};
+	
+	this.GetActionPoint= function(){
+		return action;
 	};
 	
 	this.ShowStats = function(){
@@ -328,6 +338,9 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 		
 		// calcul fin
 		var time = CalculPlusTime(SLEEPDURATION);	
+		
+		cyLogger.log('"'+name+'" are going to sleep: '+time[0].day+'/'+time[0].hour, INFO_CYLOG);
+		
 		mission.SetTimeEvent(time[0].day, time[0].hour, RestoreMyAction);
 		
 		return time;
@@ -337,6 +350,7 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 		action = action + 10;
 		action = action > actionMax ? actionMax : action;
 		cyLogger.log('"'+name+'" Restore Action Points : '+action, INFO_CYLOG);
+		UpdateInfos();
 		return true;
 	};
 	
@@ -360,15 +374,14 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 		var difficulty = 2 + contact; // reussite  sur 1 + score contact	
 		difficulty = difficulty > 6 ? 6:difficulty; // echec automatique sur 6+ 		
 		var isSuccess = rollDice(6, difficulty);
-		
+	
 		if (isSuccess){
-		
+			var missionInfos = mission.GetMissionInfos();			
 			switch (infoHuntingType){
 				case 'target':
-					data = missionTarget;
+					var data = missionInfos[0].target;
 					break;
 			}
-			
 			DisplayInfoHuntingResult(infoHuntingType, data);
 		}
 		else{

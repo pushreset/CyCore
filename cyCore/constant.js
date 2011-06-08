@@ -6,4 +6,4 @@ var cyLoggerHtmlIsActive = true;
 var cyLoggerHtmlSize = 'large';
 
 var SLEEPDURATION = 6; //in hours
-var INFOHUNTINGDURATION = 2; // in hours
+var INFOHUNTINGDURATION = 4; // in hours
