@@ -77,7 +77,17 @@ $(document).ready(function() {
 		  e.preventDefault();
 		  rollDice();
 	  });
- 
+	  
+	  $('#playOST').click(function(e){
+		  e.preventDefault();
+		  soundManager.play('ost-preparations');
+	  });
+	  
+	  $('#stopOST').click(function(e){
+		  e.preventDefault();
+		  soundManager.pause('ost-preparations');
+	  });
+	  
 	  $('.addCombatDice').live('click', function(e){
 		  e.preventDefault();
 		  var index = $(this).parent('.teamMember').attr('id');
