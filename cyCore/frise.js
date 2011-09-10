@@ -21,7 +21,7 @@ function FriseNextHour(instruction){
   elapsedElement.animate({
 	    width: newWidth
 	  },
-    hourDuration,
+    CONSTANT.HOURDURATION,
     function() {
 		  friseRunning = false;
 		  cyLogger.log('FriseNextHour - ending', 'normal');

@@ -16,7 +16,8 @@ function DisplayConstructTeam(){
 				' <a class="addHackingDice" href="#">Add Hacking Dice</a>'+
 				' <a class="addContactDice" href="#">Add Contact Dice</a>'+
 				'<br />'+
-				'<a class="goToSleep" href="#">Go to sleep</a>'+
+				'<a class="goToSleep" href="#">Go to sleep</a> '+
+				'<a class="goToPowerNap" href="#">Take a power nap</a>'+
 			'</div>'
 		);
 		target.append(html);
@@ -37,31 +38,46 @@ function DisplayInfoHuntingResult(type, data){
 function UpdateInfos(){
 	UpdateTeamInfo();
 	UpdatePoolInfo();
+	UpdateMemberAvailability();
 };
 
 function UpdateTeamInfo(){
-	$.each(team.members, function(index, value){		
+	$.each(team.members, function(index, member){		
 		var target = $('#'+index);
-			target.find('.actionPoint').text(value.GetActionPoint());
+			target.find('.actionPoint').text(member.GetActionPoint());
 	});
 };
 
 function UpdatePoolInfo(){
-	var combatPool = 0;
-	var magicPool = 0;
-	var hackingPool = 0;
-	var contactPool = 0;
 	
-	$.each(team.members, function(index, value){		
-		combatPool = combatPool + value.GetCombatPool();
-		magicPool = magicPool + value.GetMagicPool();
-		hackingPool = hackingPool + value.GetHackingPool();
-		contactPool = contactPool + value.GetContactPool();
+	$('#combatPool').text(mission.CountNotRolledDice('combat'));
+	$('#magicPool').text(mission.CountNotRolledDice('magic'));
+	$('#hackingPool').text(mission.CountNotRolledDice('hacking'));
+	$('#contactPool').text(mission.CountNotRolledDice('contact'));
+	
+	$('#combatPoolSuccess').text(mission.CountOnSuccessDice('combat'));
+	$('#magicPoolSuccess').text(mission.CountOnSuccessDice('magic'));
+	$('#hackingPoolSuccess').text(mission.CountOnSuccessDice('hacking'));
+	$('#contactPoolSuccess').text(mission.CountOnSuccessDice('contact'));
+	
+	$('#combatPoolMax').text(team.getMaxReserveDice('combat'));
+	$('#magicPoolMax').text(team.getMaxReserveDice('magic'));
+	$('#hackingPoolMax').text(team.getMaxReserveDice('hacking'));
+	$('#contactPoolMax').text(team.getMaxReserveDice('contact'));
+};
+
+function UpdateMemberAvailability(){
+	$.each(team.members, function(index, member){		
+		var target = $('#'+index);
+		if(member.checkIfBusy()){
+			target.addClass('busy');
+			target.removeClass('available');	
+		}else{
+			target.removeClass('busy');
+			target.addClass('available');
+		}
+		
+		
 	});
 	
-	
-	$('#combatPool').text(combatPool);
-	$('#magicPool').text(magicPool);
-	$('#hackingPool').text(hackingPool);
-	$('#contactPool').text(contactPool);	
-};
+}

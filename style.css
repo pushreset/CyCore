@@ -16,3 +16,7 @@ a:hover{ color:#FFF;}
 #cyLogger .warning{ background-color:rgb(230,44,109); color:#FFF;}
 #cyLogger .normal{ background-color:rgb(192,182,123); color:rgb(23,30,46);}
 #cyLogger .info{ background-color:rgb(49,225,204); color:rgb(23,30,46);}
+
+.teamMember{ margin: 10px; border:solid 2px #fff; padding: 4px;}
+.busy{ border-color: #cb1919;}
+.available{ border-color: #08af08;}

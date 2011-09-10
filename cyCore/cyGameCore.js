@@ -1,5 +1,4 @@
 /* CLASSES */
-
 function MissionObject(domains) {
 	var timeOut;
 	//un temps d'exécution en jours
@@ -14,7 +13,7 @@ function MissionObject(domains) {
 	var tracing;
 	//une probabilité de traçage par la cible en cas d'échec en d6
 	var domains = domains;
-	//des seuils de difficulté dans 4 domaine : magie, combat, hacking et contact en d6
+	//des seuils de difficulté dans 4 domaine : magic, combat, hacking et contact en d6
 	var reputation;
 	//un niveau de réputation minimum pour être sélectionné pour la mission
 
@@ -35,6 +34,8 @@ function MissionObject(domains) {
 	// D�s lanc� et en succ�s avec index perso
 	////////////////////////////////////
 
+
+
 	/* NEW DICE MANAGEMENT
 	 * DICES
 	 *
@@ -53,8 +54,8 @@ function MissionObject(domains) {
 		if(memberIndex == '') {
 			//return false; // break if no memberIndex
 		}
-		if(diceType == '') {
-			//return false; // break if no dicetype
+		if(diceType != 'combat' && diceType != 'magic' && diceType != 'hacking' && diceType != 'contact') {
+			return false; // break if no dicetype
 		}
 		failOn = failOn ? failOn : 5;
 		state = state ? state : 0;
@@ -67,7 +68,6 @@ function MissionObject(domains) {
 		}
 
 		dicesPool.add(dice);
-
 		return true;
 	}
 
@@ -91,6 +91,28 @@ function MissionObject(domains) {
 				return true
 		});
 	}
+	
+	this.RollPoolDice = function(theDiceType){
+		var rolls =  dicesPool.findAll(function(d) {
+			if(d.type == theDiceType && d.state == 0){				
+				var roll = rollDice(6, d.failOn);
+				if(roll){
+					d.state = 1; // set dice on success
+				}
+				else{
+					d.state = 2; // set dice on fail
+				}				
+			}			
+		});
+	}
+	
+	
+	
+	
+	/*
+	 * END DICE MANAGEMENT
+	 */
+	
 	var missionTarget = 'Renraku';
 
 	var missionIsOnSuccess = false;
@@ -115,8 +137,9 @@ function MissionObject(domains) {
 		});
 	};
 	// Execute toutes les actions lors de la r�solution final � la fin du timing
+	// A REFAIRE
 	this.ResolveDicesPools = function() {
-
+	
 		// construction des tableau indiquant les D6 disponible
 		$.each(team.members, function(index, data) {
 			ConstructPoolDiceArray(data.GetCombatPool(), index, 'combat');
@@ -134,7 +157,7 @@ function MissionObject(domains) {
 		hackingPoolCount = count(hackingPool);
 		contactPoolCount = count(contactPool);
 
-		cyLogger.log('TOTAL POOLS | Combat: ' + combatPoolCount + ' Magie: ' + magicPoolCount + ' Hacking: ' + hackingPoolCount + ' Contact: ' + contactPoolCount, INFO_CYLOG);
+		cyLogger.log('TOTAL POOLS | Combat: ' + combatPoolCount + ' magic: ' + magicPoolCount + ' Hacking: ' + hackingPoolCount + ' Contact: ' + contactPoolCount, INFO_CYLOG);
 
 		if(this.IfMissionIsSuccess()) {
 			missionIsOnSuccess = true;
@@ -212,38 +235,84 @@ function MissionObject(domains) {
 }
 
 function TeamObject() {
-
-	this.members = new Array();
-
-	this.addMember = function(name, magie, combat, hacking, contact, actionPoints, magieCost, combatCost, hackingCost, contactCost) {
-		this.members.push(new TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, magieCost, combatCost, hackingCost, contactCost));
+	
+	var teamInfos	= {
+		maxByRun: {
+			combat:		0,
+			hacking:	0,
+			contact:	0,
+			magic:		0
+		},
+		membersCount: 0
 	};
+	this.members 	= new Array();
+
+	this.addMember 	= function(name, magic, combat, hacking, contact, actionPoints, magicCost, combatCost, hackingCost, contactCost) {		
+		//add member
+		var index = teamInfos.membersCount;
+		this.members.add(
+			new TeamMemberObject(index, name, magic, combat, hacking, contact, actionPoints, magicCost, combatCost, hackingCost, contactCost)
+		);
+
+		// change global team infos
+		teamInfos.membersCount 		= teamInfos.membersCount		+ 1;
+		teamInfos.maxByRun.combat 	= teamInfos.maxByRun.combat 	+ combat;
+		teamInfos.maxByRun.magic 	= teamInfos.maxByRun.magic 		+ magic;
+		teamInfos.maxByRun.hacking 	= teamInfos.maxByRun.hacking 	+ hacking;
+		teamInfos.maxByRun.contact 	= teamInfos.maxByRun.contact 	+ contact;
+	};
+	
+	this.getMaxReserveDice = function(diceType){
+		return teamInfos.maxByRun[diceType];
+	}
 }
 
-function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, magieCost, combatCost, hackingCost, contactCost) {
+function TeamMemberObject(index, name, magic, combat, hacking, contact, actionPoints, magicAPCost, combatAPCost, hackingAPCost, contactAPCost, magicTimeCost, combatTimeCost, hackingTimeCost, contactTimeCost) {
+	
+	var magicAPCost 	= magicAPCost 		? magicAPCost 		: CONSTANT.MAGIC_DEFAULT_COST_AP;
+	var combatAPCost 	= combatAPCost 		? combatAPCost 		: CONSTANT.COMBAT_DEFAULT_COST_AP
+	var hackingAPCost	= hackingAPCost 	? hackingAPCost 	: CONSTANT.HACKING_DEFAULT_COST_AP;
+	var contactAPCost 	= contactAPCost 	? contactAPCost 	: CONSTANT.CONTACT_DEFAULT_COST_AP;
+	
+	var magicTimeCost 	= magicTimeCost 	? magicTimeCost 	: CONSTANT.MAGIC_DEFAULT_COST_TIME;
+	var combatTimeCost 	= combatTimeCost 	? combatTimeCost 	: CONSTANT.COMBAT_DEFAULT_COST_TIME;
+	var hackingTimeCost	= hackingTimeCost 	? hackingTimeCost 	: CONSTANT.HACKING_DEFAULT_COST_TIME;
+	var contactTimeCost = contactTimeCost 	? contactTimeCost 	: CONSTANT.CONTACT_DEFAULT_COST_TIME;
+	
+	var memberAttributes = {
+		magic: 		{
+						value: magic,
+						apCost: magicAPCost,
+						timeCost: magicTimeCost
+					},
+		combat: 	{
+						value: combat,
+						apCost: combatAPCost,
+						timeCost: combatTimeCost
+					},
+		hacking: 	{
+						value: hacking,
+						apCost: hackingAPCost,
+						timeCost: hackingTimeCost
+					},
+		contact: 	{
+						value: contact,
+						apCost: contactAPCost,
+						timeCost: contactTimeCost
+				},
+		maxAP: actionPoints,
+		actualAP: actionPoints,
+		index: index,
+		isBusy: false
+
+	}
+	
+	
 	var name = name;
-	var magie = magie;
-	var combat = combat;
-	var hacking = hacking;
-	var contact = contact;
-
-	var action = actionPoints;
-	var actionMax = actionPoints;
-
-	var magieCost = magieCost ? magieCost : 5;
-	var combatCost = combatCost ? combatCost : 5;
-	var hackingCost = hackingCost ? hackingCost : 5;
-	var contactCost = contactCost ? contactCost : 5;
 
 	var infoHuntingCost = 5;
 	var infoHuntingType;
 
-	var poolMagie = 0;
-	var poolCombat = 0;
-	var poolHacking = 0;
-	var poolContact = 0;
-
-	this.poolAvailable = 0;
 
 	function initialize() {
 
@@ -251,124 +320,84 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 
 	initialize();
 
-	this.GetMagicPool = function() {
-		return poolMagie;
-	};
-
-	this.GetCombatPool = function() {
-		return poolCombat;
-	};
-
-	this.GetHackingPool = function() {
-		return poolHacking;
-	};
-
-	this.GetContactPool = function() {
-		return poolContact;
-	};
 
 	this.GetName = function() {
 		return name;
 	};
 
 	this.GetMagic = function() {
-		return magie;
+		return memberAttributes.magic.value;
 	};
 
 	this.GetCombat = function() {
-		return combat;
+		return memberAttributes.combat.value;
 	};
 
 	this.GetHacking = function() {
-		return hacking;
+		return memberAttributes.hacking.value;
 	};
 
 	this.GetContact = function() {
-		return contact;
+		return memberAttributes.contact.value;
 	};
 
 	this.GetActionPoint = function() {
-		return action;
+		return memberAttributes.actualAP;
 	};
 
 	this.ShowStats = function() {
-		cyLogger.log('"' + name + '" M' + magie + ' C' + combat + ' H' + hacking + ' C' + contact + ' | PA' + action + ' | pM' + poolMagie + ' pC' + poolCombat + ' pH' + poolHacking + ' pC' + poolContact, INFO_CYLOG);
+		cyLogger.log('"' + name + '" M' + magic + ' C' + combat + ' H' + hacking + ' C' + contact + ' | PA' + action + ' | pM' + poolmagic + ' pC' + poolCombat + ' pH' + poolHacking + ' pC' + poolContact, INFO_CYLOG);
 	};
-
-	this.AddMagicPoolDice = function() {
-
-		var ifActionAvailable = this.ActionAvailable(magieCost);
-		var ifPoolNotAtMax = this.CheckDomainMax(magie, poolMagie);
-
-		if(ifActionAvailable && ifPoolNotAtMax) {
-			poolMagie++;
-			action = action - magieCost;
-			this.ShowStats();
-		} else if(!ifPoolNotAtMax) {
-			cyLogger.log('"' + name + '" Magic Pool already MAX ! !', WARNING_CYLOG);
+	
+	this.SetMemberBusyForHours = function(hours){
+		memberAttributes.isBusy = true;
+		var time = CalculPlusTime(hours);	
+		mission.SetTimeEvent(time[0].day, time[0].hour, SetMemberActive);
+		return true;
+	}
+	
+	function SetMemberActive(){
+		cyLogger.log('"' + name + '" member available !', WARNING_CYLOG);
+		memberAttributes.isBusy = false;
+	}
+	
+	this.AddPoolDice = function(diceType) {
+		
+		var ifMemberBusy 		= this.checkIfBusy();
+		var ifActionGranted 	= memberAttributes[diceType].value > 0;
+		var ifActionAvailable 	= this.ActionAvailable(diceType);
+		var ifPoolNotAtMax 		= this.CheckDomainMax(diceType);	
+		
+		if(ifActionAvailable && ifPoolNotAtMax && !ifMemberBusy && ifActionGranted) {		
+			if(mission.AddDiceInPool(memberAttributes.index, diceType)){
+				//use action poibnts
+				memberAttributes.actualAP = memberAttributes.actualAP - memberAttributes[diceType].apCost;
+				
+				//set when have to reactivate member
+				this.SetMemberBusyForHours(memberAttributes[diceType].timeCost);
+				return true;
+			}
+			else{
+				return false;
+			}		
+		}else if(!ifActionGranted) {
+			cyLogger.log('"' + name + '" Action not granted ! !', WARNING_CYLOG);
+			return false;
+		}else if(!ifPoolNotAtMax) {
+			cyLogger.log('"' + name + '" '+diceType+' Pool already MAX ! !', WARNING_CYLOG);
 			return false;
 		} else if(!ifActionAvailable) {
 			cyLogger.log('"' + name + '" No action point available ! !', WARNING_CYLOG);
 			return false;
-		}
-	};
-
-	this.AddCombatPoolDice = function() {
-
-		var ifActionAvailable = this.ActionAvailable(combatCost);
-		var ifPoolNotAtMax = this.CheckDomainMax(combat, poolCombat);
-
-		if(ifActionAvailable && ifPoolNotAtMax) {
-			poolCombat++;
-			action = action - combatCost;
-			this.ShowStats();
-		} else if(!ifPoolNotAtMax) {
-			cyLogger.log('"' + name + '" Combat Pool already MAX ! !', WARNING_CYLOG);
-			return false;
-		} else if(!ifActionAvailable) {
-			cyLogger.log('"' + name + '" No action point available ! !', WARNING_CYLOG);
+		}else if(ifMemberBusy) {
+			cyLogger.log('"' + name + '" is already busy ! !', WARNING_CYLOG);
 			return false;
 		}
 	};
 
-	this.AddHackingPoolDice = function() {
-
-		var ifActionAvailable = this.ActionAvailable(hackingCost);
-		var ifPoolNotAtMax = this.CheckDomainMax(hacking, poolHacking);
-
-		if(ifActionAvailable && ifPoolNotAtMax) {
-			poolHacking++;
-			action = action - hackingCost;
-			this.ShowStats();
-		} else if(!ifPoolNotAtMax) {
-			cyLogger.log('"' + name + '" hacking Pool already MAX ! !', WARNING_CYLOG);
-			return false;
-		} else if(!ifActionAvailable) {
-			cyLogger.log('"' + name + '" No action point available ! !', WARNING_CYLOG);
-			return false;
-		}
-	};
-
-	this.AddContactPoolDice = function() {
-
-		var ifActionAvailable = this.ActionAvailable(contactCost);
-		var ifPoolNotAtMax = this.CheckDomainMax(contact, poolContact);
-
-		if(ifActionAvailable && ifPoolNotAtMax) {
-			poolContact++;
-			action = action - contactCost;
-			this.ShowStats();
-		} else if(!ifPoolNotAtMax) {
-			cyLogger.log('"' + name + '" contact Pool already MAX ! !', WARNING_CYLOG);
-			return false;
-		} else if(!ifActionAvailable) {
-			cyLogger.log('"' + name + '" No action point available ! !', WARNING_CYLOG);
-			return false;
-		}
-	};
 	//check if action available
-	this.ActionAvailable = function(needed) {
-		totalIfUse = action - needed;
+	this.ActionAvailable = function(diceType) {
+		totalIfUse = memberAttributes.actualAP - memberAttributes[diceType].apCost;
 		if(totalIfUse >= 0) {
 			return true;
 		} else {
@@ -376,32 +405,55 @@ function TeamMemberObject(name, magie, combat, hacking, contact, actionPoints, m
 		}
 	};
 	//check if Pool at max
-	this.CheckDomainMax = function(domain, pool) {
-		if(pool >= domain) {
+	this.CheckDomainMax = function(diceType) {
+		if(mission.CountNotRolledDice(diceType) >= team.getMaxReserveDice(diceType)) {
 			return false;
 		} else {
 			return true;
 		}
 	};
+	
+	this.checkIfBusy = function(){
+		return memberAttributes.isBusy;
+	}
+	
 	// Member go to sleep and rest => restore Action Point
-	this.GoToSleep = function() {
-
+	this.GoToSleep = function(duration) {
+		memberAttributes.isBusy = true;
 		// calcul fin
-		var time = CalculPlusTime(SLEEPDURATION);
+		switch (duration){
+			case "short":
+				var sleepDuration 	= CONSTANT.SLEEPDURATION_SHORT;
+				var time = CalculPlusTime(sleepDuration);
+				mission.SetTimeEvent(time[0].day, time[0].hour, RestoreMyActionShort);
+				break;
+			case "full":
+			default:
+				var sleepDuration 	= CONSTANT.SLEEPDURATION_FULL;
+				var time = CalculPlusTime(sleepDuration);
+				mission.SetTimeEvent(time[0].day, time[0].hour, RestoreMyActionFull);
+				break;
+		}
 
 		cyLogger.log('"' + name + '" are going to sleep: ' + time[0].day + '/' + time[0].hour, INFO_CYLOG);
 
-		mission.SetTimeEvent(time[0].day, time[0].hour, RestoreMyAction);
-
 		return time;
 	};
-	function RestoreMyAction() {
-		action = action + 10;
-		action = action > actionMax ? actionMax : action;
-		cyLogger.log('"' + name + '" Restore Action Points : ' + action, INFO_CYLOG);
-		UpdateInfos();
+	function RestoreMyActionFull() {
+		memberAttributes.actualAP = memberAttributes.maxAP;
+		memberAttributes.isBusy = false;
+		cyLogger.log('"' + name + '" Restore Action Points : ' + memberAttributes.actualAP, INFO_CYLOG);	
 		return true;
 	};
+	
+	function RestoreMyActionShort() {		
+		memberAttributes.actualAP = memberAttributes.actualAP + CONSTANT.SLEEPRECOVER_SHORT;	
+		if (memberAttributes.actualAP > memberAttributes.maxAP)
+			memberAttributes.actualAP = memberAttributes.maxAP
+		memberAttributes.isBusy = false;
+		cyLogger.log('"' + name + '" Restore Action Points : ' + memberAttributes.actualAP, INFO_CYLOG);		
+		return true;
+	}
 
 	// Member active contact and try to find info about mission
 	this.GoToInfoHunting = function(type) {

@@ -13,42 +13,18 @@ mission.SetTimeOut(2,12);
 
 //initialize team
 var team = new TeamObject();
-team.addMember('the magot', 4, 1, 0, 3, 10);
-team.addMember('the warrior', 0, 5, 0, 2, 10);
-team.addMember('the face', 0, 2, 2, 4, 10);
-team.addMember('the hacker', 0, 0, 6, 2, 10);
+//(name, magic, combat, hacking, contact, actionPoints,
+team.addMember('the magot', 4, 1, 1, 1, 10);
+team.addMember('the warrior', 0, 5, 0, 1, 10);
+team.addMember('the face', 1, 1, 1, 3, 10);
+team.addMember('the hacker', 0, 2, 3, 1, 10);
 
 $(document).ready(function() {
 	$(window).load(function() {
 		DisplayConstructTeam();
 		UpdateInfos();
 		
-		//add pool dice for tests
-//		team.members[0].AddCombatPoolDice();
-//		team.members[1].AddCombatPoolDice();
-//		team.members[1].AddCombatPoolDice();
-//		team.members[1].AddCombatPoolDice();
-//		team.members[2].AddCombatPoolDice();
-//		team.members[3].AddCombatPoolDice();
-//
-//		team.members[0].AddMagicPoolDice();
-//		team.members[0].AddMagicPoolDice();
-//		team.members[1].AddMagicPoolDice();
-//		team.members[2].AddMagicPoolDice();
-//		team.members[3].AddMagicPoolDice();
-//
-//		team.members[0].AddHackingPoolDice();
-//		team.members[1].AddHackingPoolDice();
-//		team.members[2].AddHackingPoolDice();
-//		team.members[3].AddHackingPoolDice();
-//		team.members[3].AddHackingPoolDice();
-//
-//		team.members[0].AddContactPoolDice();
-//		team.members[1].AddContactPoolDice();
-//		team.members[2].AddContactPoolDice();
-//		team.members[2].AddContactPoolDice();
-//		team.members[3].AddContactPoolDice();		
-		
+		setInterval(UpdateInfos, 500);
 		
 		$.each(team.members, function(index, value){
 			console.log(value);
@@ -61,8 +37,7 @@ $(document).ready(function() {
 		friseWidth = friseElement.width();
 		oneHourWidth = friseWidth / 24;
 		
-		checkFrise = setInterval(FriseCore, 250);
-		
+		checkFrise = setInterval(FriseCore, 100);
 		$('#runFrise').click(function(e){
 	      e.preventDefault();
 	      StartFrise();  
@@ -80,39 +55,39 @@ $(document).ready(function() {
 	  
 	  $('#playOST').click(function(e){
 		  e.preventDefault();
-		  soundManager.play('ost-preparations');
+
 	  });
 	  
 	  $('#stopOST').click(function(e){
 		  e.preventDefault();
-		  soundManager.pause('ost-preparations');
+
 	  });
 	  
 	  $('.addCombatDice').live('click', function(e){
 		  e.preventDefault();
 		  var index = $(this).parent('.teamMember').attr('id');
-		  team.members[index].AddCombatPoolDice();
+		  team.members[index].AddPoolDice('combat');
 		  UpdateInfos();
 	  });
 	  
 	  $('.addMagicDice').live('click', function(e){
 		  e.preventDefault();
 		  var index = $(this).parent('.teamMember').attr('id');
-		  team.members[index].AddMagicPoolDice();
+		  team.members[index].AddPoolDice('magic');
 		  UpdateInfos();
 	  });
 	  
 	  $('.addHackingDice').live('click', function(e){
 		  e.preventDefault();
 		  var index = $(this).parent('.teamMember').attr('id');
-		  team.members[index].AddHackingPoolDice();
+		  team.members[index].AddPoolDice('hacking');
 		  UpdateInfos();
 	  });
 	  
 	  $('.addContactDice').live('click', function(e){
 		  e.preventDefault();
 		  var index = $(this).parent('.teamMember').attr('id');
-		  team.members[index].AddContactPoolDice();
+		  team.members[index].AddPoolDice('contact');
 		  UpdateInfos();
 	  });
 	  
@@ -123,6 +98,12 @@ $(document).ready(function() {
 		  UpdateInfos();
 	  });
 	  
+	   $('.goToPowerNap').live('click', function(e){
+		  e.preventDefault();
+		  var index = $(this).parent('.teamMember').attr('id');
+		  team.members[index].GoToSleep('short');
+		  UpdateInfos();
+	  });
 	  
 	});
 });

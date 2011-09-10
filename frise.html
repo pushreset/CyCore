@@ -1,7 +1,7 @@
+<script src="lib/sugar.js" type="text/javascript"></script>
 <script src="lib/jquery.js" type="text/javascript"></script>
 <script src="lib/jquery.dowhen.min.js" type="text/javascript"></script>
 <script src="lib/jquery.hotkeys.js" type="text/javascript"></script>
-<script src="lib/soundmanager2.js" type="text/javascript"></script>
 <script src="lib/sexy.js" type="text/javascript"></script>
 <script src="lib/utils.js" type="text/javascript"></script>
 <script src="lib/cyLogger.js" type="text/javascript"></script>
@@ -9,7 +9,6 @@
 <script src="cyCore/constant.js" type="text/javascript"></script>
 <script src="cyCore/frise.js" type="text/javascript"></script>
 <script src="cyCore/display.js" type="text/javascript"></script>
-<script src="cyCore/sound.js" type="text/javascript"></script>
 <script src="cyCore/cyGameCore.js" type="text/javascript"></script>
 
 
@@ -33,10 +32,27 @@
 <br /><br />
 
 <div id="pool">
-	<span id="combatPool"></span>
-	<span id="magicPool"></span>
-	<span id="hackingPool"></span>
-	<span id="contactPool"></span>
+	<p><strong>Dice Available</strong></p>
+	Combat : <span id="combatPool"></span> 
+	Magic: <span id="magicPool"></span> 
+	Hacking: <span id="hackingPool"></span> 
+	Contact: <span id="contactPool"></span> 
 </div>
 
+<div id="poolSuccess">
+	<p><strong>Dice Success</strong></p>
+	Combat : <span id="combatPoolSuccess"></span> 
+	Magic: <span id="magicPoolSuccess"></span> 
+	Hacking: <span id="hackingPoolSuccess"></span> 
+	Contact: <span id="contactPoolSuccess"></span> 
+</div>
+
+<div id="poolSuccess">
+	<p><strong>Max by run</strong></p>
+	Combat : <span id="combatPoolMax"></span> 
+	Magic: <span id="magicPoolMax"></span> 
+	Hacking: <span id="hackingPoolMax"></span> 
+	Contact: <span id="contactPoolMax"></span> 
+</div>
+<br /><br />
 <div id="team"></div>
