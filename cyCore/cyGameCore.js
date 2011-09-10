@@ -11,16 +11,80 @@ function MissionObject(domains){
   var reputation; //un niveau de réputation minimum pour être sélectionné pour la mission
   
   //POOL D6 miser sur la mission 
+  
+  
+//// OBSOLETE //////////////////////
+  //D6 stocké
   var combatPool			= new Array();
   var magicPool				= new Array();
   var hackingPool			= new Array();
   var contactPool			= new Array();
+  
   var combatPoolCount		= 0;
   var magicPoolCount		= 0;
   var hackingPoolCount		= 0;
   var contactPoolCount		= 0;
   var diceOnSuccess			= new Array(); // D�s lanc� et en succ�s avec index perso
+////////////////////////////////////
+
+/* NEW DICE MANAGEMENT
+ * DICES
+ * 
+ * Model
+ * 	{
+ * 	type: string // combat/magic/hacking/contact
+ * 	member: int //index of member
+ * 	failOn: int // 1/2/3/4/5/6 difficulté of the roll
+ * 	state: int // 0: not launched / 1: success / 2: failed	
+ * } 
+ */
+ 
+ var dicesPool 	= new Array();
+ 
+ this.AddDiceInPool = function(memberIndex, diceType, failOn, state){
+ 	if (memberIndex == ''){
+ 		//return false; // break if no memberIndex
+ 	}
+ 	if (diceType == ''){
+ 		//return false; // break if no dicetype
+	}
+ 	failOn		= failOn ? failOn : 5;
+ 	state		= state ? state : 0;
+
+ 	var dice = {
+ 		type: diceType,
+ 		member: memberIndex,
+ 		failOn: failOn,
+ 		state: state
+ 	}
+ 	
+ 	dicesPool.add(dice);
+ 	
+ 	return true;
+ }
   
+this.CountNotRolledDice = function(theDiceType){	
+	return dicesPool.count(function(d){
+		if(d.type == theDiceType && d.state == 0)
+			return true
+	});
+} 
+  
+this.CountOnSuccessDice = function(theDiceType){	
+	return dicesPool.count(function(d){
+		if(d.type == theDiceType && d.state == 1)
+			return true
+	});
+}
+
+this.CountFailedDice = function(theDiceType){	
+	return dicesPool.count(function(d){
+		if(d.type == theDiceType && d.state == 2)
+			return true
+	});
+}    
+  
+    
   var missionTarget			= 'Renraku';
   
   var missionIsOnSuccess	= false;
