@@ -19,6 +19,9 @@ team.addMember('the warrior', 0, 5, 0, 1, 10);
 team.addMember('the face', 1, 1, 1, 3, 10);
 team.addMember('the hacker', 0, 2, 3, 1, 10);
 
+//music
+var music = new cyCoreMusics();
+
 $(document).ready(function() {
 	$(window).load(function() {
 		DisplayConstructTeam();
@@ -30,6 +33,7 @@ $(document).ready(function() {
 			console.log(value);
 		});
 		
+		music.Play('menu');
 		
 		friseElement = $('#frise');
 		elapsedElement = $('#elapsed');
@@ -40,7 +44,8 @@ $(document).ready(function() {
 		checkFrise = setInterval(FriseCore, 100);
 		$('#runFrise').click(function(e){
 	      e.preventDefault();
-	      StartFrise();  
+	      StartFrise();
+	      music.Play('preparations');  
 	  });
 	  
 	  $('#stopFrise').click(function(e){
