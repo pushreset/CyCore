@@ -28,5 +28,20 @@ var CONSTANT = {
 	SLEEPDURATION_SHORT:				3, //in hours
 	SLEEPDURATION_FULL:					6, //in hours
 	SLEEPRECOVER_SHORT:					4, // actions points
-
+	
+	RUNDURATION:						6, //in hours
+	
+	EVENTTYPE_ENDMISSION:				'mission_final_time',
+	EVENTTYPE_SKILL:					'skill',
+	EVENTTYPE_MISSIONEVENT:				'mission_event',
+	EVENTTYPE_TEAMMEMBER_READY:			'team_member_ready',
+	EVENTTYPE_TEAMMEMBER_SLEEP:			'team_member_sleep',
+	EVENTNOMEMBERINDEX:					'all_member',
+	
+	//Malus if run not at full member
+	RUNMALUS_IFCOUNTMEMBER_4:			0, //team full
+	RUNMALUS_IFCOUNTMEMBER_3:			1,
+	RUNMALUS_IFCOUNTMEMBER_2:			2,
+	RUNMALUS_IFCOUNTMEMBER_1:			3,
+	RUNMALUS_IFCOUNTMEMBER_0:			4,
 }

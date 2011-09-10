@@ -65,6 +65,7 @@ function CheckTimeEvent(){
         if(CompareObject(mission.timeEvent[x].time, currentTime)){
            cyLogger.log('checkTimeEvent - Event found ! ', 'info', StopFrise);
            mission.timeEvent[x].toDo();
+           mission.timeEvent[x].isDone = 1;
         }   
     }
     if (startFriseAfterEvent)
@@ -88,7 +89,12 @@ function StartFrise(){
   cyLogger.log('GO FRISE', 'warning');
 }
 
-function CalculPlusTime(hours){
+function CalculPlusTime(hours, reference){
+	
+	if(reference == undefined){
+		reference = currentTime;
+	}
+	
 	//hourOfDay	dayOfWeek
 	var daysPlus = 0;
 	var hoursPlus = 0;
@@ -109,7 +115,7 @@ function CalculPlusTime(hours){
 		hoursPlus = hours;
 	}
 	
-	hourFinal = currentTime.hour + hoursPlus;
+	hourFinal = reference.hour + hoursPlus;
 	
 	//console.log('hourOfDay: '+hourOfDay);
 	//console.log('hourPlus: '+hourFinal);
@@ -119,7 +125,7 @@ function CalculPlusTime(hours){
 		hourFinal = hourFinal - 24;		
 	}
 	
-	dayFinal = currentTime.day + daysPlus;
+	dayFinal = reference.day + daysPlus;
 	
 	return new Array({day: dayFinal, hour: hourFinal});
 	

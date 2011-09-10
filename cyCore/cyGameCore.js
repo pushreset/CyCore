@@ -92,10 +92,11 @@ function MissionObject(domains) {
 		});
 	}
 	
-	this.RollPoolDice = function(theDiceType){
+	this.RollPoolDice = function(theDiceType, malus){
 		var rolls =  dicesPool.findAll(function(d) {
 			if(d.type == theDiceType && d.state == 0){				
-				var roll = rollDice(6, d.failOn);
+
+				var roll = rollDice(6, (d.failOn - malus));
 				if(roll){
 					d.state = 1; // set dice on success
 				}
@@ -136,10 +137,33 @@ function MissionObject(domains) {
 			target : missionTarget
 		});
 	};
+
+	this.GoToRun = function(isFinal){
+		var memberCount = 0;
+		$.each(team.members, function(index, member) {
+			if(!member.checkIfBusy()){
+				memberCount++
+				member.SetMemberBusyForHours(CONSTANT.RUNDURATION);
+			}
+		});
+		
+		if(memberCount > 0){ //can RUN only if at least one member available
+			var malus = CONSTANT['RUNMALUS_IFCOUNTMEMBER_'+memberCount];
+			mission.RollPoolDice('combat', malus);
+			mission.RollPoolDice('hacking', malus);
+			mission.RollPoolDice('magic', malus);
+			mission.RollPoolDice('contact', malus);
+		}
+	}
+	
 	// Execute toutes les actions lors de la r�solution final � la fin du timing
 	// A REFAIRE
 	this.ResolveDicesPools = function() {
-	
+
+		
+
+
+/*	
 		// construction des tableau indiquant les D6 disponible
 		$.each(team.members, function(index, data) {
 			ConstructPoolDiceArray(data.GetCombatPool(), index, 'combat');
@@ -166,7 +190,7 @@ function MissionObject(domains) {
 			missionIsOnSuccess = false;
 			cyLogger.log('mission failed');
 		}
-
+*/
 	};
 
 	this.IfMissionIsSuccess = function() {
@@ -216,12 +240,12 @@ function MissionObject(domains) {
 	//callback when timeOut
 	TimeOutMission = function() {
 		cyLogger.log('TimeOutMission', INFO_CYLOG);
-		mission.ResolveDicesPools();
+		mission.GoToRun(true);
 	};
 	// set time event
 	this.SetTimeOut = function(day, hour) {
 		if(!timeOutSetted) {
-			this.timeEvent.push(new EventObject(day, hour, TimeOutMission));
+			this.timeEvent.push(new EventObject(day, hour, TimeOutMission, CONSTANT.EVENTTYPE_ENDMISSION, CONSTANT.EVENTNOMEMBERINDEX));
 			timeOutSetted = true;
 		} else {
 			cyLogger.log('SetTimeOut : Already Setted !', WARNING_CYLOG);
@@ -229,9 +253,22 @@ function MissionObject(domains) {
 
 	};
 	// set time event
-	this.SetTimeEvent = function(day, hour, callback) {
-		this.timeEvent.push(new EventObject(day, hour, callback));
+	this.SetTimeEvent = function(day, hour, callback, type, memberIndex) {
+		this.timeEvent.push(new EventObject(day, hour, callback, type, memberIndex));
 	};
+	
+	// return index of time event
+	this.SearchTimeEvent = function(type, memberIndex, isDone){
+		var eventIndexs = new Array();
+		
+		this.timeEvent.findAll(function(e, index) {
+			if(e.isDone == isDone && e.type == type && e.memberIndex == memberIndex){				
+				eventIndexs.add(index);			
+			}			
+		});
+		
+		return eventIndexs;
+	}
 }
 
 function TeamObject() {
@@ -352,7 +389,7 @@ function TeamMemberObject(index, name, magic, combat, hacking, contact, actionPo
 	this.SetMemberBusyForHours = function(hours){
 		memberAttributes.isBusy = true;
 		var time = CalculPlusTime(hours);	
-		mission.SetTimeEvent(time[0].day, time[0].hour, SetMemberActive);
+		mission.SetTimeEvent(time[0].day, time[0].hour, SetMemberActive, CONSTANT.EVENTTYPE_TEAMMEMBER_READY, memberAttributes.index);
 		return true;
 	}
 	
@@ -425,13 +462,13 @@ function TeamMemberObject(index, name, magic, combat, hacking, contact, actionPo
 			case "short":
 				var sleepDuration 	= CONSTANT.SLEEPDURATION_SHORT;
 				var time = CalculPlusTime(sleepDuration);
-				mission.SetTimeEvent(time[0].day, time[0].hour, RestoreMyActionShort);
+				mission.SetTimeEvent(time[0].day, time[0].hour, RestoreMyActionShort, CONSTANT.EVENTTYPE_TEAMMEMBER_SLEEP, memberAttributes.index);
 				break;
 			case "full":
 			default:
 				var sleepDuration 	= CONSTANT.SLEEPDURATION_FULL;
 				var time = CalculPlusTime(sleepDuration);
-				mission.SetTimeEvent(time[0].day, time[0].hour, RestoreMyActionFull);
+				mission.SetTimeEvent(time[0].day, time[0].hour, RestoreMyActionFull, CONSTANT.EVENTTYPE_TEAMMEMBER_SLEEP, memberAttributes.index);
 				break;
 		}
 
@@ -461,7 +498,7 @@ function TeamMemberObject(index, name, magic, combat, hacking, contact, actionPo
 
 		if(this.ActionAvailable(infoHuntingCost)) {
 			var time = CalculPlusTime(INFOHUNTINGDURATION);
-			mission.SetTimeEvent(time[0].day, time[0].hour, InfoHunting);
+			mission.SetTimeEvent(time[0].day, time[0].hour, InfoHunting, CONSTANT.EVENTTYPE_SKILL, memberAttributes.index);
 
 			return time;
 		} else {
@@ -497,14 +534,21 @@ function TimeObject(setDay, setHour) {
 	this.hour = setHour;
 }
 
-function EventObject(day, hour, callback) {
-	this.time = new TimeObject(day, hour);
-	this.toDo = function() {
-
-		if(callback && typeof (callback) === "function") {
-			callback();
-		}
-	};
+function EventObject(day, hour, callback, type, memberIndex) {
+	this.time 			= new TimeObject(day, hour);
+	this.type 			= type;
+	this.memberIndex 	= memberIndex;
+	this.isDone 		= 0;
+	this.toDo 			= function() {
+							if(callback && typeof (callback) === "function") {
+								callback();
+							}
+						}
+	this.addHours		= function(hours){
+		this.time  = CalculPlusTime(hours, this.time);
+	}
+	
+	
 }
 
 /* FUNCTIONS */
