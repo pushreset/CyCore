@@ -13,6 +13,7 @@ function cyCoreMusics(){
 		
 		var currentlyRunning = '';
 		var soundFolder = '/sound/';
+		//var soundFolder = 'http://www.pushreset.fr/cycore/sound/';
 		
 		var musics = {
 			preparations: 		new buzz.sound(soundFolder+"preparations"),
@@ -34,7 +35,7 @@ function cyCoreMusics(){
 		}
 		
 		this.StopAll = function(){		
-			musics[currentlyRunning].stop();
+			musics[currentlyRunning].mute();
 		}
 
 		this.preload = function(){

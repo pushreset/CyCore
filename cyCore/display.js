@@ -8,16 +8,17 @@ function DisplayConstructTeam(){
 	$.each(team.members, function(index, value){		
 		var html = (
 			'<div id="'+index+'" class="teamMember">'+
+				'<div class="head">'+
 				'<span class="name">'+value.GetName()+'</span>'+
-				' <span class="actionPoint">'+value.GetActionPoint()+'</span>'+
-				'<br />'+
-				' <a class="addCombatDice" href="#">Add Combat Dice</a>'+
-				' <a class="addMagicDice" href="#">Add Magic Dice</a>'+
-				' <a class="addHackingDice" href="#">Add Hacking Dice</a>'+
-				' <a class="addContactDice" href="#">Add Contact Dice</a>'+
-				'<br />'+
-				'<a class="goToSleep" href="#">Go to sleep</a> '+
-				'<a class="goToPowerNap" href="#">Take a power nap</a>'+
+				' <span class="memberInfos">[AP: <span class="actionPoint">'+value.GetActionPoint()+'</span>]</span>'+
+				'</div>'+
+				'<a class="addCombatDice actionButton" href="#">Add Combat Dice</a>'+
+				'<a class="addMagicDice actionButton" href="#">Add Magic Dice</a>'+
+				'<a class="addHackingDice actionButton" href="#">Add Hacking Dice</a>'+
+				'<a class="addContactDice actionButton" href="#">Add Contact Dice</a>'+
+				'<a class="goToSleep actionButton" href="#">Go to sleep</a> '+
+				'<a class="goToPowerNap actionButton" href="#">Take a power nap</a>'+
+				'<div style="clear:both;"></div>'+
 			'</div>'
 		);
 		target.append(html);

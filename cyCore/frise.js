@@ -7,6 +7,7 @@ var runFrise = false; //set if frise have to be paused or not
 var dayOfWeek = 1;
 var hourOfDay = 0;
 var checkFrise;
+var startFriseAfterEvent = true;
 
 // Go to nextHour
 function FriseNextHour(instruction){
@@ -66,6 +67,9 @@ function CheckTimeEvent(){
            mission.timeEvent[x].toDo();
         }   
     }
+    if (startFriseAfterEvent)
+    	StartFrise();
+    	
     return true; 
 }
 

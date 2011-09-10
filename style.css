@@ -20,3 +20,9 @@ a:hover{ color:#FFF;}
 .teamMember{ margin: 10px; border:solid 2px #fff; padding: 4px;}
 .busy{ border-color: #cb1919;}
 .available{ border-color: #08af08;}
+.actionButton{ display: block; float: left; padding: 5px; border: solid 1px #cccccc; margin: 2px; text-decoration: none;}
+.actionButton:focus{ background-color: #fff; color:#000;}
+.busy .actionButton{ opacity: 0.5;}
+
+.name{ font-weight: bold; font-size: 14px;}
+.head{ padding: 4px 0;}
