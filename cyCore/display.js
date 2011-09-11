@@ -10,7 +10,7 @@ function DisplayConstructTeam(){
 			'<div id="'+index+'" class="teamMember">'+
 				'<div class="head">'+
 				'<span class="name">'+value.GetName()+'</span>'+
-				' <span class="memberInfos">[AP: <span class="actionPoint">'+value.GetActionPoint()+'</span>]</span>'+
+				' <span class="memberInfos">[Action Points: <span class="actionPoint">'+value.GetActionPoint()+'</span>]</span>'+
 				'</div>'+
 				'<a class="addCombatDice actionButton" href="#">Add Combat Dice</a>'+
 				'<a class="addMagicDice actionButton" href="#">Add Magic Dice</a>'+

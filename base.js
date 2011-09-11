@@ -59,13 +59,13 @@ $(document).ready(function() {
 	  });
 	  
 	  $('#playOST').click(function(e){
+		  music.Play('preparations');
 		  e.preventDefault();
-
 	  });
 	  
 	  $('#stopOST').click(function(e){
 		  e.preventDefault();
-
+		  music.StopAll();
 	  });
 	  
 	  $('.addCombatDice').live('click', function(e){
@@ -108,6 +108,16 @@ $(document).ready(function() {
 		  var index = $(this).parent('.teamMember').attr('id');
 		  team.members[index].GoToSleep('short');
 		  UpdateInfos();
+	  });
+	  
+	  $('#RUN').live('click', function(e){
+	  		e.preventDefault();
+	  		mission.GoToRun(false);
+	  });
+	  
+	   $('#FINAL_RUN').live('click', function(e){
+	  		e.preventDefault();
+	  		mission.GoToRun(true);
 	  });
 	  
 	});

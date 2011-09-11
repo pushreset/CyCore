@@ -26,3 +26,5 @@ a:hover{ color:#FFF;}
 
 .name{ font-weight: bold; font-size: 14px;}
 .head{ padding: 4px 0;}
+
+.runButton{ margin:0 10px; display: block; float: left; padding: 5px; border: solid 1px #cccccc; cursor: pointer;}

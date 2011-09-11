@@ -154,6 +154,20 @@ function MissionObject(domains) {
 			mission.RollPoolDice('magic', malus);
 			mission.RollPoolDice('contact', malus);
 		}
+		
+		if(isFinal){
+			
+			if(this.IfMissionIsSuccess()) {
+				missionIsOnSuccess = true;
+				alert('Mission réussie !');
+				cyLogger.log('Mission is a success');
+			} else {
+				missionIsOnSuccess = false;
+				alert('Mission failed...');
+				cyLogger.log('mission failed');
+			}
+			
+		}
 	}
 	
 	// Execute toutes les actions lors de la r�solution final � la fin du timing
@@ -195,7 +209,13 @@ function MissionObject(domains) {
 
 	this.IfMissionIsSuccess = function() {
 		var difficulty = mission.GetDifficulty();
-		if(combatPoolCount >= difficulty.combat && magicPoolCount >= difficulty.magic && hackingPoolCount >= difficulty.hacking && contactPoolCount >= difficulty.contact) {
+		
+		var isMagicSuccess 		= mission.CountOnSuccessDice('magic') >= difficulty.magic;
+		var isCombatSuccess 	= mission.CountOnSuccessDice('combat') >= difficulty.combat;
+		var isHackingSuccess 	= mission.CountOnSuccessDice('hacking') >= difficulty.hacking;
+		var isContactSuccess 	= mission.CountOnSuccessDice('contact') >= difficulty.contact;
+		
+		if(isMagicSuccess && isCombatSuccess && isHackingSuccess && isContactSuccess) {
 			return true;
 		} else {
 			return false;
