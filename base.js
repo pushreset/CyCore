@@ -13,11 +13,76 @@ mission.SetTimeOut(2,12);
 
 //initialize team
 var team = new TeamObject();
+
+var skills = {
+	0:{
+	 	type: 'object',
+	 	name: 'Shinmeia MedPack',
+	 	slug: 'shinmeia-medpack',
+	 	usageCount: 1,
+	 	usage: { 
+	 		beforeRun:			0,
+	 		beforeFinalRun:		0,
+	 		afterRun:			0,
+	 		afterFinalRun:		0,
+	 		action:				1
+	 	},
+	 	effects: {
+	 				0: {
+	 					type: 'ap',
+	 					who: 'me',
+	 					value: (-4)
+	 				},
+	 				1: {
+	 					type: 'hour',
+	 					who: 'me',
+	 					value: (-1)
+	 				},
+	 				2: {
+	 					type: 'ap',
+	 					who: 'team',
+	 					value: (4) 					
+	 				},
+	 			}
+	},
+	1:{
+	 	type: 'object',
+	 	name: 'Shinmeia MedPack',
+	 	slug: 'shinmeia-medpack',
+	 	usageCount: 1,
+	 	usage: { 
+	 		beforeRun:			0,
+	 		beforeFinalRun:		0,
+	 		afterRun:			0,
+	 		afterFinalRun:		0,
+	 		action:				1
+	 	},
+	 	effects: {
+	 				0: {
+	 					type: 'ap',
+	 					who: 'me',
+	 					value: (-4)
+	 				},
+	 				1: {
+	 					type: 'hour',
+	 					who: 'me',
+	 					value: (-1)
+	 				},
+	 				2: {
+	 					type: 'ap',
+	 					who: 'team',
+	 					value: (4) 					
+	 				},
+	 			}
+	}
+	
+};
+
 //(name, magic, combat, hacking, contact, actionPoints,
-team.addMember('the magot', 4, 1, 1, 1, 10);
-team.addMember('the warrior', 0, 5, 0, 1, 10);
-team.addMember('the face', 1, 1, 1, 3, 10);
-team.addMember('the hacker', 0, 2, 3, 1, 10);
+team.addMember('the magot', 4, 1, 1, 1, 10, skills);
+team.addMember('the warrior', 0, 5, 0, 1, 10, skills);
+team.addMember('the face', 1, 1, 1, 3, 10, skills);
+team.addMember('the hacker', 0, 2, 3, 1, 10, skills);
 
 //music
 var music = new cyCoreMusics();

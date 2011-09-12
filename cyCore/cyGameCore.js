@@ -308,7 +308,7 @@ function TeamObject() {
 		//add member
 		var index = teamInfos.membersCount;
 		this.members.add(
-			new TeamMemberObject(index, name, magic, combat, hacking, contact, actionPoints, magicCost, combatCost, hackingCost, contactCost)
+			new TeamMemberObject(index, name, magic, combat, hacking, contact, actionPoints, skills, magicCost, combatCost, hackingCost, contactCost)
 		);
 
 		// change global team infos
@@ -324,7 +324,7 @@ function TeamObject() {
 	}
 }
 
-function TeamMemberObject(index, name, magic, combat, hacking, contact, actionPoints, magicAPCost, combatAPCost, hackingAPCost, contactAPCost, magicTimeCost, combatTimeCost, hackingTimeCost, contactTimeCost) {
+function TeamMemberObject(index, name, magic, combat, hacking, contact, actionPoints, skills, magicAPCost, combatAPCost, hackingAPCost, contactAPCost, magicTimeCost, combatTimeCost, hackingTimeCost, contactTimeCost) {
 	
 	var magicAPCost 	= magicAPCost 		? magicAPCost 		: CONSTANT.MAGIC_DEFAULT_COST_AP;
 	var combatAPCost 	= combatAPCost 		? combatAPCost 		: CONSTANT.COMBAT_DEFAULT_COST_AP
@@ -364,6 +364,7 @@ function TeamMemberObject(index, name, magic, combat, hacking, contact, actionPo
 
 	}
 	
+	this.skills= skills;
 	
 	var name = name;
 
@@ -546,7 +547,115 @@ function TeamMemberObject(index, name, magic, combat, hacking, contact, actionPo
 
 		return true;
 	};
+	
+	/**
+	 * 
+	 
+	 {
+	 	type: skills / object
+	 	name: Name of the skill
+	 	slug: Slug name
+	 	usage-count: int
+	 	usage: {
+	 		before-run:			0/1,
+	 		before-final-run:	0/1,
+	 		after-run:			0/1,
+	 		after-final-run:	0/1,
+	 		action:				0/1
+	 		}
+	 	effects: {
+	 		{
+	 			type: actions points, reroll, etc.
+	 			who: me / team / choose # which is impacted by the effect
+	 			value: int or function
+	 		}
+	 		
+	 	}
+	 }
+	 
+	 exemple1:
+	 Medpack utilisable qu'une seule fois, rajouter 4 AP à toute la team, le runner qui l'utilise doit d'abord dépenser 4 AP + 1 hour
+	 {
+	 	type: 'object'
+	 	name: 'Shinmeia MedPack'
+	 	slug: 'shinmeia-medpack'
+	 	usage-count: 1,
+	 	usage: { 
+	 		before-run:			0,
+	 		before-final-run:	0,
+	 		after-run:			0,
+	 		after-final-run:	0,
+	 		action:				1
+	 		}
+	 	effects: {
+	 				{
+	 					type: 'ap',
+	 					who: 'me',
+	 					value: -4
+	 				},
+	 				{
+	 					type: 'hour',
+	 					who: 'me',
+	 					value: -1
+	 				},
+	 				{
+	 					type: 'ap'
+	 					who: 'team',
+	 					value: 4
+	 					
+	 				}
+	 	}
+	 }
+	 
+	 exemple 2:
+	 
+	 */
+	
+	this.GetMemberSkills = function(){
+		return skills;
+	}
+	
+	this.UseSkill = function(name){
 
+		mySkills = this.GetMemberSkills(); 
+		
+		$.each(mySkills, function(index, skill){		
+			console.log(skill.slug);
+			if(skill.slug == name && skill.usageCount > 0){
+				console.log(skill);
+				DoEffects(skill.effects);
+				return false; // looking for one item only
+			}
+		});
+	}
+	
+	function DoEffects(effects){
+		
+		$.each(effects, function(index, effect){
+			var membersIndex = new Array();
+			
+			switch(effect.who){
+				case 'me':
+					membersIndex.add(memberAttributes.index);
+					break;
+				case 'team':
+					$.each(team.members, function(memberIndex, member){
+						membersIndex.add(memberIndex);
+					});
+					break;
+			}
+			
+			$.each(index, function(memberIndex, member){
+				DoEffect(memberIndex, effect);
+			});
+					
+		});
+	}
+	
+	function DoEffect(memberIndex, effect){
+		console.log(effect.type + " "  +effect.who+" "+effect.value);
+	}
+	
 }
 
 function TimeObject(setDay, setHour) {
