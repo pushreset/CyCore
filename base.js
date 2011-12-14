@@ -98,7 +98,7 @@ $(document).ready(function() {
 			console.log(value);
 		});
 		
-		music.Play('menu');
+		//music.Play('menu');
 		
 		friseElement = $('#frise');
 		elapsedElement = $('#elapsed');
@@ -110,7 +110,7 @@ $(document).ready(function() {
 		$('#runFrise').click(function(e){
 	      e.preventDefault();
 	      StartFrise();
-	      music.Play('preparations');  
+	      //music.Play('preparations');  
 	  });
 	  
 	  $('#stopFrise').click(function(e){

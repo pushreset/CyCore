@@ -1,6 +1,8 @@
 //use buzz.jz
 function cyCoreMusics(){
 		
+		var isActivated = false;
+		
 		function init(){
 			buzz.defaults.preload 	= true;
 			buzz.defaults.loop 		= true;
