@@ -507,12 +507,25 @@ function TeamMemberObject(index, name, magic, combat, hacking, contact, actionPo
 	function RestoreMyActionShort() {		
 		memberAttributes.actualAP = memberAttributes.actualAP + CONSTANT.SLEEPRECOVER_SHORT;	
 		if (memberAttributes.actualAP > memberAttributes.maxAP)
-			memberAttributes.actualAP = memberAttributes.maxAP
+			memberAttributes.actualAP = memberAttributes.maxAP;
 		memberAttributes.isBusy = false;
 		cyLogger.log('"' + name + '" Restore Action Points : ' + memberAttributes.actualAP, INFO_CYLOG);		
 		return true;
 	}
-
+	
+	
+	this.AlterMyActionsPoints = function(number) {		
+		memberAttributes.actualAP = memberAttributes.actualAP + number;	
+		
+		if (memberAttributes.actualAP > memberAttributes.maxAP) memberAttributes.actualAP = memberAttributes.maxAP;
+		
+		if (memberAttributes.actualAP < 0) memberAttributes.actualAP = 0;
+			
+		memberAttributes.isBusy = false;
+		cyLogger.log('"' + name + '" Restore Action Points : ' + memberAttributes.actualAP, INFO_CYLOG);		
+		return true;
+	}
+	
 	// Member active contact and try to find info about mission
 	this.GoToInfoHunting = function(type) {
 		infoHuntingType = type;
@@ -654,6 +667,16 @@ function TeamMemberObject(index, name, magic, combat, hacking, contact, actionPo
 	
 	function DoEffect(memberIndex, effect){
 		console.log(effect.type + " "  +effect.who+" "+effect.value);
+		
+		switch (effect){
+			case 'AP': // action points
+				
+				break;
+			
+			
+		}
+		
+		
 	}
 	
 }
